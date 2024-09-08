@@ -106,7 +106,7 @@ def extract_artist_image_urls(artist):
 
     painting_entries =  soup.find_all('div', attrs={'class': "view-all-works ng-scope", "ng-controller":"MasonryCtrl"})
     
-    if len(painting_entries) == 0: return artist_data
+    if len(painting_entries) == 0: return artist_hyphened, artist_data
 
     url_pattern = r'https?://[\w./()-]+'
     urls = re.findall(url_pattern, painting_entries[0]["ng-init"])
@@ -138,7 +138,7 @@ def extract_artist_image_urls(artist):
 
         artist_data['paintings'].append(image_info)
 
-    return artist_data
+    return artist_hyphened, artist_data
 
 if __name__ == '__main__':
     soup = BeautifulSoup(artists_raw, "html.parser")
@@ -151,7 +151,8 @@ if __name__ == '__main__':
         artists.append(list_entries[i].get_text())
 
     for artist in artists:
-        artist_to_images[artist] = extract_artist_image_urls(artist)
+        artist_hyphened, artist_data = extract_artist_image_urls(artist)
+        artist_to_images[artist_hyphened] = artist_data
 
     with open("data.json", "w") as jf:
         json.dump(artist_to_images, jf)
